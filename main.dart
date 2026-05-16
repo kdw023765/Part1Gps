@@ -37,7 +37,7 @@ class _Part1GpsMainScreenState extends State<Part1GpsMainScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('파트 1: GPS 위치 가드')),
       body: const Center(
-        child: Text('GPS 감시 백그라운드 실행 중... (Mock Location 앱으로 테스트)'),
+        child: Text('GPS 감시 백그라운드 실행 중... (Mock Location 앱으로 테스트) // 나중에 지움'),
       ),
     );
   }
