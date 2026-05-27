@@ -20,6 +20,25 @@ class Zone {
         .collection('dangerZones');
   }
 
+  /// 위험 지역 실시간 목록 스트림
+  Stream<List<DangerZone>> getDangerZonesStream() {
+    return _dangerZoneCollection.snapshots().map((snapshot) {
+      return snapshot.docs
+          .map((doc) => DangerZone.fromMap(doc.data()))
+          .toList();
+    });
+  }
+
+  /// 활성화된 위험 지역 개수 스트림
+  Stream<int> enabledDangerZoneCountStream() {
+    return _dangerZoneCollection.snapshots().map((snapshot) {
+      return snapshot.docs.where((doc) {
+        final data = doc.data();
+        return data['isEnabled'] == true;
+      }).length;
+    });
+  }
+
   /// 새로운 위험 지역 추가
   Future<void> addDangerZone(DangerZone zone) async {
     await _dangerZoneCollection.doc(zone.docId).set(zone.toMap());
@@ -38,6 +57,17 @@ class Zone {
         },
       ),
     );
+  }
+
+  /// 위험 지역 삭제
+  Future<void> deleteDangerZone(String docId) async {
+    await _dangerZoneCollection.doc(docId).delete();
+
+    try {
+      await bg.BackgroundGeolocation.removeGeofence(docId);
+    } catch (e) {
+      print('[Zone] 지오펜스 제거 실패: $e');
+    }
   }
 
   /// 위험 지역 감시 ON / OFF
